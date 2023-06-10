@@ -15,7 +15,7 @@ struct PersistenceController {
     static var preview: PersistenceController = {
         let controller = PersistenceController(inMemory: true)
         
-        for num in 0..<10 {
+        for num in 0..<3 {
             let task = TaskItem(context: controller.container.viewContext)
             task.id = UUID()
             task.name = "task\(num)"
