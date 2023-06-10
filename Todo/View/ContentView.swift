@@ -8,7 +8,7 @@
 import SwiftUI
 import CoreData
 
-struct ContentView: View {
+struct HomeView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
     @FetchRequest(sortDescriptors: [
@@ -20,34 +20,58 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            List {
-                ForEach(items, id: \.self){ item in
-                    let name = item.name
-                    Text("\(name ?? "")")
-                }
-                .onDelete(perform: deleteItems)
-            }
-            
-            .navigationTitle("Todo List")
-            .navigationBarTitleDisplayMode(.inline)
-            .sheet(isPresented: $showingAddTodo, content: {
-                AddTodoView().environment(\.managedObjectContext, self.viewContext)
-            })
-            
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        self.showingAddTodo.toggle()
-                    } label: {
-                        Image(systemName: "plus")
+            ZStack {
+                List {
+                    ForEach(items, id: \.self){ item in
+                        HStack {
+                            Circle()
+                                .frame(width: 10, height: 10)
+                                .foregroundColor(.accentColor)
+                            Text("\(item.name?.capitalized ?? "")")
+                                .fontWeight(.bold)
+                            Spacer()
+                            Text("\(item.priority ?? "")")
+                                .font(.footnote)
+                                .foregroundColor(Color(UIColor.systemGray2))
+                                .padding(3)
+                                .frame(minWidth: 62)
+                                .overlay(
+                                    Capsule().stroke(Color(UIColor.systemGray2), lineWidth: 0.75)
+                                )
+                                
+                        }
+                        .padding(.vertical)
+                        
+                        
                     }
-                }
+                    .onDelete(perform: deleteItems)
+                } // LIST
                 
-                ToolbarItem(placement: .navigationBarLeading) {
-                    EditButton()
+                .navigationTitle("Todo List")
+                .navigationBarTitleDisplayMode(.inline)
+                .sheet(isPresented: $showingAddTodo, content: {
+                    AddTodoView().environment(\.managedObjectContext, self.viewContext)
+                })
+                
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button {
+                            self.showingAddTodo.toggle()
+                        } label: {
+                            Image(systemName: "plus")
+                        }
+                    }
+                    
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        EditButton()
+                    }
+                }// TOOLBAR
+                
+                if items.count == 0 {
+                    EmptyView()
                 }
             }
-        }
+        }.navigationViewStyle(StackNavigationViewStyle())
         
     }
     
@@ -67,6 +91,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        HomeView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
