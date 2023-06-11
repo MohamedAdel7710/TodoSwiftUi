@@ -20,9 +20,11 @@ struct AddTodoView: View {
     //MARK: - BODY
     var body: some View {
         NavigationView {
-            VStack {
-                Form {
+            VStack(alignment: .center, spacing: 20) {
                     TextField("Todo", text: $taskName)
+                    .padding()
+                    .background(Color(UIColor.tertiarySystemFill))
+                    .cornerRadius(10)
                     
                     Picker("Priority", selection: $priority) {
                         ForEach(priorities, id: \.self) {
@@ -36,12 +38,21 @@ struct AddTodoView: View {
                             return
                         }
                         saveTask(name: taskName, priority: priority)
+                        
                     } label: {
                         Text("Save")
+                          .font(.system(size: 24, weight: .bold))
+                          .padding()
+                          .frame(minWidth: 0, maxWidth: .infinity)
+                          .background(.blue)
+                          .cornerRadius(9)
+                          .foregroundColor(Color.white)
                     }
-
-                }//Form
-            } //VStack
+                Spacer()
+            }
+            .padding(.vertical,20)
+            .padding(.horizontal)//VStack
+            
             .navigationTitle("New Todo")
             .navigationBarTitleDisplayMode(.inline)
             
@@ -59,7 +70,9 @@ struct AddTodoView: View {
                 }
             }//Toolbar
             
+            
         }//NavigationView
+        .navigationViewStyle(StackNavigationViewStyle())
     }
     //MARK: - Helper Function
     func saveTask(name:String, priority: String) {
@@ -69,6 +82,7 @@ struct AddTodoView: View {
      
         do {
             try managedObjectContext.save()
+            dismissView()
         } catch {
             print(error)
         }
