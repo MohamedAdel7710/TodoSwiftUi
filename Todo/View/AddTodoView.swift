@@ -16,7 +16,8 @@ struct AddTodoView: View {
     @State private var priority = "Normal"
     @State private var isShowingAlert = false
     private let priorities = ["Low", "Normal", "High"]
-    
+    @ObservedObject var theme = ThemeSettings.shared
+    let themes = themeData
     //MARK: - BODY
     var body: some View {
         NavigationView {
@@ -44,7 +45,7 @@ struct AddTodoView: View {
                           .font(.system(size: 24, weight: .bold))
                           .padding()
                           .frame(minWidth: 0, maxWidth: .infinity)
-                          .background(.blue)
+                          .background(themes[self.theme.themeSettings].color)
                           .cornerRadius(9)
                           .foregroundColor(Color.white)
                     }
@@ -73,6 +74,7 @@ struct AddTodoView: View {
             
         }//NavigationView
         .navigationViewStyle(StackNavigationViewStyle())
+        .accentColor(themes[self.theme.themeSettings].color)
     }
     //MARK: - Helper Function
     func saveTask(name:String, priority: String) {

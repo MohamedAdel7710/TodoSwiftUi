@@ -17,7 +17,10 @@ struct HomeView: View {
     ]) var items: FetchedResults<TaskItem>
     
     @State private var showingAddTodo = false
+    @State private var showingSetting = false
     
+    let themes = themeData
+    @ObservedObject var theme = ThemeSettings.shared
     var body: some View {
         NavigationView {
             ZStack {
@@ -52,13 +55,16 @@ struct HomeView: View {
                 .sheet(isPresented: $showingAddTodo, content: {
                     AddTodoView().environment(\.managedObjectContext, self.viewContext)
                 })
+                .sheet(isPresented: $showingSetting, content: {
+                    SettingView()
+                })
                 
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button {
-                            self.showingAddTodo.toggle()
+                            self.showingSetting.toggle()
                         } label: {
-                            Image(systemName: "plus")
+                            Image(systemName: "gearshape")
                         }
                     }
                     
@@ -71,7 +77,35 @@ struct HomeView: View {
                     EmptyView()
                 }
             }
-        }.navigationViewStyle(StackNavigationViewStyle())
+            .overlay(
+                ZStack {
+                    Circle()
+                        .frame(width: 68, height: 68, alignment: .center)
+                        .foregroundColor(.accentColor)
+                        .opacity(0.2)
+                    
+                    Circle()
+                        .frame(width: 88, height: 88, alignment: .center)
+                        .foregroundColor(.accentColor)
+                        .opacity(0.15)
+                    
+                    Button {
+                        showingAddTodo.toggle()
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                          .resizable()
+                          .scaledToFit()
+                          .background(Circle().fill(Color("ColorBase")))
+                          .frame(width: 48, height: 48, alignment: .center)
+                    }
+                }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom)
+                ,alignment: .bottomTrailing
+            )
+        }
+        .navigationViewStyle(.stack)
+        .accentColor(themes[self.theme.themeSettings].color)
         
     }
     
